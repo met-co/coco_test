@@ -1,0 +1,50 @@
+{
+  "rooms": [
+    {
+      "id": 1,
+      "roomName": "공부할사람",
+      "category": "코딩"
+    },
+    {
+      "roomName": "서울대 23학번만 들어와라",
+      "category": "수학",
+      "id": 2
+    },
+
+    {
+      "roomName": "쇼펜하우어가 이런말을 했죠.",
+      "category": "철학",
+      "id": 4
+    },
+    {
+      "roomName": "아인슈타인뺨 때린 남자 -김현우-",
+      "category": "뇌과학",
+      "id": 5
+    },
+    {
+      "roomName": "이",
+      "category": "철학",
+      "id": 6
+    },
+    {
+      "roomName": "ㄴㄴㅇ",
+      "category": "뇌과학",
+      "id": 7
+    },
+    {
+      "roomName": "김ㄴㄴㄴ",
+      "category": "심리학",
+      "id": 8
+    }
+  ],
+  "comments": [
+    {
+      "id": 1,
+      "body": "some comment",
+      "postId": 1
+    }
+  ],
+  "profile": {
+    "name": "typicode"
+  }
+}
