@@ -67,7 +67,7 @@ export const __getRoom = createAsyncThunk(
         { withCredentials: true }
       );
       console.log(result.data);
-      return thunkAPI.fulfillWithValue(result.data);
+      return thunkAPI.fulfillWithValue(result.data.getRoomResponseDtos);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
