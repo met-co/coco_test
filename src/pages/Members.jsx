@@ -25,11 +25,8 @@ export default function Members() {
         </a>
       </StNotion>
       <StGit>
-        <a
-          href="https://github.com/cocodingding-project/cocodingding"
-          target="_blank"
-        >
-          FE github repo
+        <a href="https://github.com/cocodingdingHanghae99" target="_blank">
+          github repo
         </a>
       </StGit>
       <StBtn
