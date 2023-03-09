@@ -274,7 +274,7 @@ const roomSlice = createSlice({
       .addCase(__postExitRoom.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        // window.location.reload();
+        window.location.reload();
       })
       .addCase(__postExitRoom.rejected, (state, action) => {
         state.isSuccess = false;
