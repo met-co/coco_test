@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import Login from '../Login/Login';
-import Layout from '../Layout/Layout';
-import MyPage from '../Login/MyPage';
-import { useNavigate } from 'react-router-dom';
-import { FaRegUserCircle } from 'react-icons/fa';
+import React, { useState } from "react";
+import styled from "styled-components";
+import Login from "../Login/Login";
+import Layout from "../Layout/Layout";
+import MyPage from "../Login/MyPage";
+import { useNavigate } from "react-router-dom";
+import { FaRegUserCircle } from "react-icons/fa";
 
 export default function Topbar() {
   const navigate = useNavigate();
@@ -29,11 +29,11 @@ export default function Topbar() {
   };
 
   // 로그인 상태 판별
-  const isLoggedIn = !!localStorage.getItem('Authorization');
+  const isLoggedIn = !!localStorage.getItem("Authorization");
 
   // 로그아웃 기능
   const handleLogout = () => {
-    localStorage.removeItem('Authorization');
+    localStorage.removeItem("Authorization");
     window.location.reload();
   };
 
@@ -53,9 +53,9 @@ export default function Topbar() {
             {/* localStorage에 "Authorization"이 존재할때 "마이페이지", 존재하지않을때 "로그인"  */}
 
             <>
-              <StMyPage onClick={handleMyPageModalOpen}>
+              {/* <StMyPage onClick={handleMyPageModalOpen}>
                 <FaRegUserCircle />
-              </StMyPage>
+              </StMyPage> */}
               <StButton onClick={handleLogout}>로그아웃</StButton>
 
               {isMyPageModalOpen && <MyPage onClose={handleMyPageModalClose} />}
@@ -79,7 +79,7 @@ const StContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 0 1rem; */
-  position: sticky;
+  /* position: sticky; */
   top: 0;
   backdrop-filter: blur(30px);
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);

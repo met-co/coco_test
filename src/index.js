@@ -13,7 +13,8 @@ import Main from "./pages/Main";
 import Detail from "./pages/Detail";
 import Kakao from "./components/Login/Kakao";
 import SignUp from "./pages/SignUp";
-import Test from "./pages/Test";
+import Notice from "./pages/Notice";
+import Members from "./pages/Members";
 
 // 리덕스, 스토어
 // import { CookiesProvider } from 'react-cookie';
@@ -34,7 +35,8 @@ const router = createBrowserRouter([
       { path: "SignUp", element: <SignUp /> },
       { path: "detail/:openviduRoomId", element: <Detail /> },
       { path: "user/kakao", element: <Kakao /> },
-      { path: "test", element: <Test /> },
+      { path: "notice", element: <Notice /> },
+      { path: "members", element: <Members /> },
     ],
   },
 ]);

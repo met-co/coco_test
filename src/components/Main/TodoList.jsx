@@ -1,20 +1,20 @@
-import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import styled from 'styled-components';
+import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import styled from "styled-components";
 import {
   toggleTodo,
   deleteTodo,
   addTodo,
   editTodo,
-} from '../../redux/modules/todoSlice';
-import { BiTrashAlt } from 'react-icons/bi';
-import { AiOutlineEdit } from 'react-icons/ai';
-import { BsArrowUpCircle } from 'react-icons/bs';
+} from "../../redux/modules/todoSlice";
+import { BiTrashAlt } from "react-icons/bi";
+import { AiOutlineEdit } from "react-icons/ai";
+import { BsArrowUpCircle } from "react-icons/bs";
 
 const TodoList = () => {
   const todos = useSelector((state) => state.todos);
   const dispatch = useDispatch();
-  const [newTodo, setNewTodo] = useState('');
+  const [newTodo, setNewTodo] = useState("");
 
   const handleToggleTodo = (id) => {
     dispatch(toggleTodo(id));
@@ -33,7 +33,7 @@ const TodoList = () => {
           completed: false,
         })
       );
-      setNewTodo('');
+      setNewTodo("");
     }
   };
 
@@ -55,13 +55,13 @@ const TodoList = () => {
           <StTodoListDescription key={todo.id}>
             <div>
               <StCheckbox
-                type='checkbox'
+                type="checkbox"
                 checked={todo.completed}
                 onChange={() => handleToggleTodo(todo.id)}
               />
               <span
                 style={{
-                  textDecoration: todo.completed ? 'line-through' : 'none',
+                  textDecoration: todo.completed ? "line-through" : "none",
                 }}
               >
                 {todo.text}
@@ -73,7 +73,7 @@ const TodoList = () => {
                 onClick={() =>
                   handleEditTodo(
                     todo.id,
-                    prompt('Enter new todo text', todo.text)
+                    prompt("Enter new todo text", todo.text)
                   )
                 }
               >
@@ -89,8 +89,7 @@ const TodoList = () => {
       <div>
         <StTodoForm>
           <StTodoInput
-            type='text'
-            placeholder='오늘의 할일을 적어주세요! ^^'
+            type="text"
             value={newTodo}
             onChange={(e) => setNewTodo(e.target.value)}
           />
@@ -165,7 +164,6 @@ const StTodoForm = styled.form`
 
 const StTodoInput = styled.input`
   flex: 1;
-  max-width: 679px;
   width: 100%;
   height: 33px;
   font-size: 16px;

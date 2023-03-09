@@ -1,25 +1,24 @@
-import React from 'react';
-import styled from 'styled-components';
-import { Link } from 'react-router-dom';
-import { BsBroadcast } from 'react-icons/bs';
-import { MdOutlinePeople } from 'react-icons/md';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { __postVideoToken } from '../../redux/modules/roomSlice';
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { __postVideoToken } from "../../redux/modules/roomSlice";
+import styled from "styled-components";
+import { BsBroadcast } from "react-icons/bs";
+import { MdOutlinePeople } from "react-icons/md";
 
 // getColorByCategory 함수를 선언합니다.
 const getColorByCategory = (category) => {
   switch (category) {
-    case '수학':
-      return '#78b4e9';
-    case '심리학':
-      return '#f5c469';
-    case '뇌과학':
-      return '#f0656f';
-    case '철학':
-      return '#a5d8c5';
+    case "개발":
+      return "#E6FFFF";
+    case "취준":
+      return "#FFF7CE";
+    case "직장인":
+      return "#FEEAFF";
+    case "수능":
+      return "#a5d8c5";
     default:
-      return 'gray';
+      return "gray";
   }
 };
 
@@ -27,10 +26,9 @@ const Card = ({ room }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const isLoggedIn = !!localStorage.getItem('Authorization');
+  const isLoggedIn = !!localStorage.getItem("Authorization");
 
   const handleSubmit = (id) => {
-    console.log(id);
     dispatch(__postVideoToken(id));
   };
 
@@ -44,28 +42,28 @@ const Card = ({ room }) => {
 
           <StBroadcast>
             <StUser>
-              <MdOutlinePeople /> 2/4
+              <MdOutlinePeople /> {room.currentMember} / 4
             </StUser>
             <BsBroadcast />
           </StBroadcast>
         </StRoomUpper>
-        <StRoomTitle>{room.roomTitle}</StRoomTitle>
-        <StNickname> 닉네임</StNickname>
+        <h2>{room.roomTitle}</h2>
+        <StNickname>{room.masterUserNickname}</StNickname>
       </StContainer>
-      <div>
+      <StButtonBox>
         <StButton
           onClick={() => {
             handleSubmit(room.openviduRoomId);
             if (isLoggedIn) {
               navigate(`/detail/${room.openviduRoomId}`);
             } else {
-              alert('로그인이 필요한 기능입니다.');
+              alert("로그인이 필요한 기능입니다.");
             }
           }}
         >
           입장하기
         </StButton>
-      </div>
+      </StButtonBox>
     </StCreatedRoom>
   );
 };
@@ -76,11 +74,10 @@ const StCreatedRoom = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  margin-left: 1rem;
-  margin-right: 1rem;
-  margin-top: 40px;
-  width: 320px;
-  height: 270px;
+
+  margin: 30px 28px 30px 28px;
+  width: 410px;
+  height: 250px;
   border-radius: 3rem;
   box-shadow: 4px 5px 15px rgba(0, 0, 0, 0.3);
 `;
@@ -116,9 +113,18 @@ const StUser = styled.div`
   color: black;
   font-size: 20px;
   margin-right: 15px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
 `;
 
-const StRoomTitle = styled.h2``;
+const StButtonBox = styled.div`
+  width: 410px;
+  height: 110px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
 const StButton = styled.button`
   font-size: 20px;
@@ -126,9 +132,9 @@ const StButton = styled.button`
   color: #3d8afd;
   border-radius: 30px;
   background-color: white;
-  width: 164px;
+  width: 300px;
   height: 40px;
-  margin-left: 45px;
+  /* margin: 0px 50% 20px 25%; */
   cursor: pointer;
   &:hover {
     color: white;

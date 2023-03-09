@@ -16,7 +16,7 @@ const OpenViduVideoComponent = (props) => {
       <video
         autoPlay={true}
         ref={videoRef}
-        style={{ width: "200px", borderRadius: "10px" }}
+        style={{ width: "170px", borderRadius: "20px" }}
       ></video>
       <StNickname>
         {props.streamManager.stream.connection.data.split("%")[2]}
@@ -28,15 +28,17 @@ const OpenViduVideoComponent = (props) => {
 export default OpenViduVideoComponent;
 
 const StContainer = styled.div`
-  /* width: 30px;
-  height: 30px; */
+  width: 160px;
+  height: 120px;
 `;
 
 const StNickname = styled.div`
-  width: 200px;
-  /* display: flex;
-  align-items: center;
-  justify-content: center; */
-
-  /* font-size: 90px; */
+  height: 40px;
+  margin-top: 5px;
+  background-color: white;
+  border: 1px solid #a0a0a0;
+  border-radius: 15px;
+  display: inline-block;
+  padding: 10px;
+  box-sizing: border-box;
 `;

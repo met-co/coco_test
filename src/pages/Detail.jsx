@@ -1,29 +1,51 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import axios from "axios";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { OpenVidu } from "openvidu-browser";
+import ReactPlayer from "react-player";
+import styled from "styled-components";
 import Layout from "../components/Layout/Layout";
 import TopbarDetail from "../components/Topbar/TopbarDetail";
-import styled from "styled-components";
-// import { OpenVidu } from 'openvidu-browser';
-import { OpenVidu } from "openvidu-browser";
-import { useLocation } from "react-router-dom";
-// import VideoRecord from "../components/videoRecord/VideoRecord";
 import VideoRecord from "../components/VideoRecord/VideoRecord";
-import { useNavigate, useParams } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-
-import axios from "axios";
 import Chat from "../components/Chat/Chat";
-import UserVideoComponent from "../components/VideoRecord/UserVideoComponent";
-// import UserVideoComponent from "../components/VideoRecord/UserVideoComponent";
 import {
   __postVideoToken,
   __postExitRoom,
   __getRoomNickname,
   __getRoom,
 } from "../redux/modules/roomSlice";
-
-import ReactPlayer from "react-player";
+import { BsMicFill } from "react-icons/bs";
+import { BsMicMuteFill } from "react-icons/bs";
+import { BsCameraVideo } from "react-icons/bs";
+import { BsCameraVideoOff } from "react-icons/bs";
 
 export default function Detail() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { openviduRoomId } = useParams();
+
+  //openVidu
+  const [session, setSession] = useState(undefined);
+  const [OV, setOV] = useState();
+  const [mainStreamManager, setMainStreamManager] = useState(undefined);
+  const [publisher, setPublisher] = useState(null);
+  const [subscribers, setSubscribers] = useState([]);
+  const [isConnect, setIsConnect] = useState(false);
+
+  ////////////////////////////////////////////////////////////////////
+  const nickname = localStorage.getItem("nickname");
+  const roomData = useSelector((state) => state.room.roomInfo);
+  const { roomNicknames } = useSelector((state) => state.room);
+  const [roomTitle, setRoomTitle] = useState(null);
+  const [keyToken, setKeyToken] = useState(null);
+  const [sessionId, setSessionId] = useState(null);
+  const [currentVideoDevice, setCurrentVideoDevice] = useState(null);
+  const [nicknames, setNickNames] = useState(null);
+  const [videoOnOff, setVideoOnOff] = useState(true);
+  const [nowSubscriber, setNowSubscriber] = useState(null);
+
   //리프레시토큰//
   const reIssue = async () => {
     try {
@@ -52,41 +74,6 @@ export default function Detail() {
     reIssue();
   }, 30000 * 10);
 
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  const dispatch = useDispatch();
-  const { openviduRoomId } = useParams();
-  console.log(openviduRoomId);
-
-  //오픈비듀
-  const [session, setSession] = useState(undefined);
-  const [OV, setOV] = useState();
-  const [mainStreamManager, setMainStreamManager] = useState(undefined);
-  const [publisher, setPublisher] = useState(null);
-  const [subscribers, setSubscribers] = useState([]);
-  const [checkMyScreen, setCheckMyScreen] = useState("");
-  const [isConnect, setIsConnect] = useState(false); // 커넥팅 체크
-  // const [role,setRole] = useState(location.state.role) // 역할
-
-  ////////////////////////////////////////////////////////////////////
-  const nickname = localStorage.getItem("nickname");
-  const roomData = useSelector((state) => state.room.roomInfo);
-  const { roomNicknames } = useSelector((state) => state.room);
-  // const accessToken = localStorage.getItem("Authorization");
-  const [roomTitle, setRoomTitle] = useState(null);
-  const [keyToken, setKeyToken] = useState(null);
-  const [sessionId, setSessionId] = useState(null);
-  const [currentVideoDevice, setCurrentVideoDevice] = useState(null);
-  const [nicknames, setNickNames] = useState(null);
-  const [videoOnOff, setVideoOnOff] = useState(true);
-  // const [usernickname, setUsernickname] = useState(null);
-  const [nowSubscriber, setNowSubscriber] = useState(null);
-
-  // useEffect(() => {
-  //   dispatch(__getRoomInfo(openviduRoomId));
-  // }, []);
-
   // get한 데이터가 들어왔을 때 useState로 관리
   useEffect(() => {
     setRoomTitle(roomData.roomTitle);
@@ -98,39 +85,16 @@ export default function Detail() {
     joinSession();
   }, [keyToken]);
 
-  console.log(sessionId);
-  console.log(keyToken);
-  console.log(roomData);
-
-  // 오픈 비듀
-  const deleteSubscriber = (streamManagerId) => {
-    try {
-      setSubscribers((current) =>
-        current.filter(
-          (sub) => sub.stream.connection.connectionId !== streamManagerId
-        )
-      ); //e.stream.session.options.sessionId
-      setCheckMyScreen(false);
-    } catch (error) {}
-  };
-
-  // 브라우저 새로고침, 종료, 라우트 변경
-  // const leaveload = async () => {
-  //   let accessToken2 = localStorage.getItem("accessToken")
-  //   try{
-  //     if(role === "master"){
-  //       setCheckMyScreen(false)
-  //       const getOutRoomMaster = await axios.delete(`/room/${location.state.sessionId}`,{headers:{"authorization":accessToken2,"refreshtoken":refreshtoken}})
-  //       leaveSession();
-  //     }else if(role === "user"){
-  //       setCheckMyScreen(false)
-  //       const getOutRoomUser = await axios.post(`/room/${location.state.sessionId}/member`,{},{headers:{"authorization":accessToken2,"refreshtoken":refreshtoken}})
-  //     }
-  //   }catch(error){
-  //   }
+  // const reload = async () => {
+  //   const onReload = await axios.post(
+  //     `https://cocodingding.shop/detail/room/${openviduRoomId}`
+  //   );
   // };
 
-  // '나가기' 버튼 연결하기
+  // window.onbeforeunload = function () {
+  //   reload();
+  // };
+
   const leaveSession = () => {
     setSubscribers([]);
     setOV(undefined);
@@ -142,36 +106,18 @@ export default function Detail() {
   };
 
   const joinSession = () => {
-    // openvidu 세션 생성하기
-    // 1. openvidu 객체 생성
     const newOV = new OpenVidu();
-    // 2. initSesison 생성
     const newsession = newOV.initSession();
     setSession(newsession);
-    // JSON.parse(JSON.stringify(newSession))
-    // 3. 미팅을 종료하거나 뒤로가기 등의 이벤트를 통해 세션을 disconnect 해주기 위해 state에 저장
     setOV(newOV);
-    // 4. session에 connect하는 과정
     newsession.on("streamCreated", (e) => {
       const newSubscriber = newsession.subscribe(e.stream, undefined);
       setSubscribers(() => [...subscribers, newSubscriber]);
       setIsConnect(true);
     });
-    // 1-2 session에서 disconnect한 사용자 삭제
-    newsession.on("streamDestroyed", (e) => {
-      if (e.stream.typeOfVideo === "CUSTOM") {
-        deleteSubscriber(e.stream.connection.connectionId);
-      } else {
-        // setCheckMyScreen(true);
-      }
-    });
-    // 1-3 예외처리
+
     newsession.on("exception", (exception) => {});
 
-    // 토큰값 가져오기
-
-    // getToken().then((token) => {
-    console.log("keytoken", keyToken);
     newsession
       .connect(keyToken, { clientData: nickname })
       .then(async () => {
@@ -190,16 +136,14 @@ export default function Detail() {
               videoSource: videoTrack, // The source of video. If undefined default video input
               publishAudio: true, // Whether you want to start the publishing with audio unmuted or muted
               publishVideo: true, // Whether you want to start the publishing with video enabled or disabled
-              // resolution: '1280x720',  // The resolution of your video
-              // frameRate: 10,   // The frame rate of your video
+              resolution: "1280x720", // The resolution of your video
+              frameRate: 10, // The frame rate of your video
               insertMode: "APPEND", // How the video will be inserted according to targetElement
               mirror: true, // Whether to mirror your local video or not
             });
-            // 4-b user media 객체 생성
             newPublisher.once("accessAllowed", () => {
               newsession.publish(newPublisher);
               setPublisher(newPublisher);
-              console.log("pub", publisher);
             });
 
             // Obtain the current video device in use
@@ -227,97 +171,25 @@ export default function Detail() {
           error.message
         );
       });
-    // });
   };
 
-  const getToken = async () => {
-    await createSession();
-    return await createToken();
+  const [pubVideo, setPubVideo] = useState(true);
+  const [pubMic, setPubMic] = useState(true);
+
+  const onClickPubVideoOnOff = () => {
+    setPubVideo(!pubVideo);
   };
 
-  const createSession = async () => {
-    const sessionResponse = sessionId;
-    return sessionResponse;
+  const onClickPubMicOnOff = () => {
+    setPubMic(!pubMic);
   };
 
-  const createToken = async () => {
-    const tokenResponse = keyToken;
-    return tokenResponse; // The token
-  };
-
-  // 새로운 유저 받아오기
-  // const getUserName = async () => {
-  //   setNickNames(streamManager.stream.connection.data.split("%")[2])
-  //   }
-
-  // 유저 갱신 useEffect
-  // useEffect(() => {
-  //   getUserName()
-  // },[publisher,subscribers]);
-
-  // 브라우저 삭제 및 새로고침 시 leave
-  // window.onbeforeunload=function(){
-  //   leaveload()
-  // }
-
-  // 리프레시 토큰
-  // const reIssue = async () => {
-  //   try{
-  //     let refreshtoken = localStorage.getItem("refreshtoken")
-  //     let accessToken = localStorage.getItem("accessToken")
-  //     const repo = await axios.get(`/member/reissue`,{headers:{"authorization":accessToken,"refreshtoken":refreshtoken}})
-  //     localStorage.removeItem("accessToken");
-  //     localStorage.setItem("accessToken",repo.headers.authorization)
-  //   }catch(error){
-  //   }
-  // }
-
-  // 리프레시 토큰 셋인터벌로 관리
-  // setInterval(()=>{
-  //   reIssue()
-  // },60000 * 10)
-
-  //참여자 비디오 컨트롤
-  const onClickSubscriberVideoToggle = (connectionId) => {
-    const subConnectionId = connectionId;
-    setVideoOnOff(!videoOnOff);
-
-    const subscriberFilter = subscribers.filter((sub) => {
-      return sub.stream.connection.connectionId === subConnectionId;
-    });
-    setNowSubscriber(subscriberFilter);
-  };
-
-  //참여자 비디오 컨트롤
   useEffect(() => {
-    console.log("onClickSubscriberVVVVideoToggle : ", videoOnOff);
-    console.log("❗ nowSubscriber : ", nowSubscriber);
-    if (nowSubscriber && nowSubscriber.length > 0) {
-      const subscriber = nowSubscriber;
-      subscriber[0].subscribeToVideo(videoOnOff);
+    if (publisher) {
+      publisher.publishVideo(pubVideo);
+      publisher.publishAudio(pubMic);
     }
-  }, [videoOnOff]);
-
-  console.log(videoOnOff);
-
-  useEffect(() => {}, [subscribers]);
-
-  const player = useRef();
-  const sendCurYoutubeTime = useRef();
-  const [isPlaying, setIsPlaying] = useState(false);
-
-  // useEffect(() => {
-  //   if (isPlaying) {
-  //     sendCurYoutubeTime.current = setInterval(() => {
-  //       dispatch(
-  //         commonActions.setPlayInfo({
-  //           curYoutubeTime: Math.ceil(player.current.getCurrentTime()),
-  //         })
-  //       );
-  //     }, 1000);
-  //   }
-  //   return () => clearInterval(sendCurYoutubeTime.current);
-  // }, [isPlaying]);
+  }, [pubVideo, pubMic]);
 
   return (
     <>
@@ -327,10 +199,8 @@ export default function Detail() {
           <h1>Welcome ! {roomData.roomTitle} 방 입니다.</h1>
         </StTitle>
         <StContainer>
-          {/* <StVideoContainer><UserVideoComponent /></StVideoContainer> */}
           <StVideoContainer>
             <StVideo>
-              {/* <UserVideoComponent /> */}
               <div className="video-chat">
                 {session !== undefined ? (
                   <StRoomVideo>
@@ -350,65 +220,35 @@ export default function Detail() {
                       <StSub>
                         <Stbox>
                           <div className="sub">
-                            {/* <StnickName>나</StnickName> */}
                             <VideoRecord
                               streamManager={publisher}
-                              // role={location.state.role}
                             ></VideoRecord>
-                            {publisher.length > 0 &&
-                              publisher.map((sub, index) => (
-                                <button
-                                  onClick={() => {
-                                    onClickSubscriberVideoToggle(
-                                      sub.stream.connection.connectionId
-                                    );
-                                  }}
-                                >
-                                  hkjh
-                                  {videoOnOff ? "비디오 on" : "비디오 off"}
-                                </button>
-                              ))}
                           </div>
                         </Stbox>
 
                         <Stbox>
-                          {1 > 0
-                            ? subscribers.map((sub, index) => (
+                          {subscribers.length > 0 &&
+                            subscribers.map((sub, index) => {
+                              return (
                                 <>
-                                  <StnickName></StnickName>
-                                  <button
-                                    onClick={() => {
-                                      onClickSubscriberVideoToggle(
-                                        sub.stream.connection.connectionId
-                                      );
-                                    }}
-                                  >
-                                    hkjh
-                                    {videoOnOff ? "비디오 on" : "비디오 off"}
-                                  </button>
-                                  <button>dfadfs</button>
                                   <VideoRecord
                                     streamManager={sub}
                                     key={index}
-                                    // role={location.state.role}
                                   ></VideoRecord>
                                 </>
-                              ))
-                            : null}
+                              );
+                            })}
                         </Stbox>
                       </StSub>
                     )}
                   </StRoomVideo>
                 ) : null}
 
-                {/* <StPlayerContainer>
+                <StPlayerContainer>
                   <ReactPlayer
-                    url='https://youtu.be/HdIumpGExJk'
-                    width='600px'
-                    height='100%'
-                    ref={player}
-                    // playing={isPlaying}
-                    // 특정시점부터 시작
+                    url={roomData.youtubeLink}
+                    width="550px"
+                    height="310px"
                     config={{
                       youtube: {
                         playerVars: {
@@ -416,33 +256,25 @@ export default function Detail() {
                         },
                       },
                     }}
-                    // onStart={() => {
-                    //   props.setIsStart(true);
-                    // }}
-                    // onEnded={endVideo}
-                    // muted={isMuted}
-                    volume={5}
+                    volume={1}
                     controls
                   />
-                </StPlayerContainer> */}
+                </StPlayerContainer>
               </div>
             </StVideo>
 
             <StcontrolBox>
-              <button onClick={leaveSession}>나가기</button>
-              {subscribers.length > 0 &&
-                subscribers?.map((sub, index) => (
-                  <button
-                    onClick={() => {
-                      onClickSubscriberVideoToggle(
-                        sub.stream.connection.connectionId
-                      );
-                    }}
-                  >
-                    hkjh
-                    {videoOnOff ? "비디오 on" : "비디오 off"}
-                  </button>
-                ))}
+              <StPersonal>
+                <StVideoBtn pubVideo={pubVideo} onClick={onClickPubVideoOnOff}>
+                  {pubVideo ? <BsCameraVideo /> : <BsCameraVideoOff />}
+                </StVideoBtn>
+                <StMicBtn pubMic={pubMic} onClick={onClickPubMicOnOff}>
+                  {pubMic ? <BsMicFill /> : <BsMicMuteFill />}
+                </StMicBtn>
+              </StPersonal>
+              <StExit>
+                <StExitBtn onClick={leaveSession}>나가기</StExitBtn>
+              </StExit>
             </StcontrolBox>
           </StVideoContainer>
 
@@ -473,8 +305,10 @@ const StContainer = styled.div`
   width: 100%;
   height: 700px;
   margin-top: 50px;
-
   display: flex;
+  border: 1px solid #a0a0a0;
+  border-radius: 15px;
+  background-color: #f6f6f6;
 `;
 
 const StVideoContainer = styled.div`
@@ -490,23 +324,18 @@ const StChatContainer = styled.div`
   width: 100%;
 `;
 
-const StPub = styled.div`
-  /* width: 200px;
-  height: 400px; */
-`;
+const StPub = styled.div``;
 
 const StRoomVideo = styled.div`
-  /* width: 500px;
-  height: 500px; */
+  height: 200px;
 `;
 
 const StSub = styled.div`
   display: flex;
-  /* flex-direction: column; */
   justify-content: center;
   align-items: center;
-  width: 700px;
-  height: 300px;
+  width: 500px;
+  height: 200px;
 `;
 
 const Stbox = styled.div`
@@ -518,28 +347,20 @@ const Stbox = styled.div`
   }
 `;
 
-const StnickName = styled.div`
-  /* position: absolute;
-  top: 300px;
-  left: 10px;
-  z-index: 1;
-  color: #fff;
-  padding: 6px 16px;
-  border-radius: 14px;
-  background-color: rgba(0, 0, 0, 0.5); */
-`;
+const StnickName = styled.div``;
 
 const StVideo = styled.div`
   height: 90%;
 `;
 
 const StcontrolBox = styled.div`
-  background-color: aliceblue;
   height: 80px;
-  & > button {
-    width: 60px;
-    height: 20px;
-  }
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #a0a0a0;
+  padding: 0px 30px 0px 30px;
 `;
 
 const StPlayerContainer = styled.div`
@@ -547,6 +368,8 @@ const StPlayerContainer = styled.div`
   width: 100%;
   height: 400px;
   justify-content: center;
+  align-items: center;
+  border-radius: 15px;
   /* display: flex;
   justify-content: center;
   align-items: center;
@@ -558,3 +381,48 @@ const StPlayerContainer = styled.div`
     height: 426px;
   } */
 `;
+
+const StPersonal = styled.div`
+  display: flex;
+  gap: 20px;
+`;
+
+const StVideoBtn = styled.button`
+  width: 130px;
+  height: 49px;
+  border: none;
+  border-radius: 10px;
+  background-color: ${({ pubVideo }) => (pubVideo ? "#3d8afd" : "white")};
+  color: ${({ pubVideo }) => (pubVideo ? "white" : "#3d8afd")};
+  font-size: 24px;
+  cursor: pointer;
+`;
+
+const StMicBtn = styled.button`
+  width: 130px;
+  height: 49px;
+  border: none;
+  border-radius: 10px;
+  background-color: ${({ pubMic }) => (pubMic ? "#3d8afd" : "white")};
+  color: ${({ pubMic }) => (pubMic ? "white" : "#3d8afd")};
+  font-size: 24px;
+  cursor: pointer;
+`;
+
+const StExitBtn = styled.button`
+  width: 130px;
+  height: 49px;
+  border: 1px solid #a0a0a0;
+  border-radius: 10px;
+  background-color: white;
+  color: black;
+  font-size: 24px;
+  cursor: pointer;
+  :hover {
+    background-color: black;
+    color: white;
+    transition: 0.5ms ease;
+  }
+`;
+
+const StExit = styled.div``;

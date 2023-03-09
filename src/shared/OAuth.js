@@ -18,6 +18,8 @@ const REDIRECT_URI = 'http://localhost:3000/user/kakao';
 //현우
 // const REDIRECT_URI = 'https://cocodingding.shop/test/kakao';
 
+// export const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=account_email,gender`;
+
 export const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;
 
 // 1/GET방식으로 주소로 요청시 인증코드 받을수있음.

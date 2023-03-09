@@ -1,15 +1,15 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
 export default function SearchBar({ search, setSearch, setCategory, rooms }) {
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
-    setCategory('');
+    setCategory("");
   };
 
   const selectCategory = (category) => {
     setCategory(category);
-    setSearch('');
+    setSearch("");
   };
 
   const categories = Array.from(new Set(rooms.map((room) => room.category)));
@@ -17,11 +17,12 @@ export default function SearchBar({ search, setSearch, setCategory, rooms }) {
   return (
     <StBackground>
       <StInput
-        type='text'
-        placeholder='참여하고싶은 방을 찾아보세요'
+        type="text"
+        placeholder="  참여하고싶은 방을 찾아보세요"
         value={search}
         onChange={handleSearchChange}
       />
+
       <StCategorys>
         {categories.map((category) => (
           <StCategory key={category} onClick={() => selectCategory(category)}>
@@ -35,12 +36,14 @@ export default function SearchBar({ search, setSearch, setCategory, rooms }) {
 
 const StBackground = styled.div`
   background-color: #ffe45c;
-  width: 100vw;
-  max-width: 105vw;
+  width: 500px;
+  flex-basis: 60%;
+  /* max-width: 105vw; */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  font-family: "AppleSDGothicNeo", "Noto Sans KR", sans-serif;
 `;
 
 const StCategorys = styled.div`
@@ -51,8 +54,9 @@ const StCategorys = styled.div`
 `;
 
 const StInput = styled.input`
-  width: 25%;
-  height: 43px;
+  max-width: 700px;
+  width: 100%;
+  height: 53px;
   border: solid 1px gray;
   border-radius: 10px;
   background-color: white;
@@ -73,4 +77,20 @@ const StCategory = styled.div`
     border: 2px solid #3d8afd;
     margin-bottom: -2px;
   }
+`;
+
+const StContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  /* justify-content: center; */
+  margin-top: 30px;
+  margin-bottom: 50px;
+`;
+
+const StImg = styled.img`
+  /* flex-basis: 20%; */
+  margin-left: 40px;
+  width: 150px;
+  height: 150px;
 `;
