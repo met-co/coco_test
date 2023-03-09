@@ -131,6 +131,7 @@ export const __postVideoToken = createAsyncThunk(
         },
         { withCredentials: true }
       );
+      console.log(result.data);
       return thunkAPI.fulfillWithValue(result.data);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
