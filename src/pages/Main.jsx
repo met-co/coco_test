@@ -72,10 +72,10 @@ const Main = () => {
           <StTopContainer>
             <StBackground>
               <StTitle>
-                <h1>
+                <StTitleFont>
                   안녕하세요, {localStorage.getItem("userNickname")}님! 오늘도
                   함께 공부해요.
-                </h1>
+                </StTitleFont>
               </StTitle>
 
               <SearchBar
@@ -111,7 +111,7 @@ const Main = () => {
           <StTopContainer>
             <StBackground>
               <StTitle>
-                <h1>안녕하세요! 오늘도 함께 공부해요</h1>
+                <StTitleFont>안녕하세요! 오늘도 함께 공부해요</StTitleFont>
               </StTitle>
               <SearchBar
                 search={search}
@@ -180,6 +180,10 @@ const StTitle = styled.div`
   display: flex;
   justify-content: center;
   font-family: "AppleSDGothicNeo", "Noto Sans KR", sans-serif;
+`;
+
+const StTitleFont = styled.h3`
+  font-size: 30px; ;
 `;
 
 const StMidBoxs = styled.div`

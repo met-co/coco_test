@@ -40,7 +40,7 @@ export default function Topbar() {
   return (
     <StContainer>
       <Layout>
-        <StImg src={`${process.env.PUBLIC_URL}/img/Group 86.png`}></StImg>
+        {/* <StImg src={`${process.env.PUBLIC_URL}/img/Group 86.png`}></StImg> */}
         <StWrapBox>
           <StStudy
             onClick={() => {
