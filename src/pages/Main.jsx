@@ -111,7 +111,7 @@ const Main = () => {
           <StTopContainer>
             <StBackground>
               <StTitle>
-                <h1>함께 공부좀하시죠?</h1>
+                <h1>안녕하세요! 오늘도 함께 공부해요</h1>
               </StTitle>
               <SearchBar
                 search={search}
