@@ -41,6 +41,7 @@ export const __createRoom = createAsyncThunk(
         },
         { withCredentials: true }
       );
+
       return thunkAPI.fulfillWithValue(result.data);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
@@ -124,14 +125,14 @@ export const __postVideoToken = createAsyncThunk(
         // `https://cocodingding.shop/detail/room/${payload}`,
         { password: "" },
         {
-          // headers: {
-          //   "Content-Type": "application/json",
-          //   Authorization: token,
-          // },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
         },
         { withCredentials: true }
       );
-      console.log(result.data);
+
       return thunkAPI.fulfillWithValue(result.data);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
