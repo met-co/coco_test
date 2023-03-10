@@ -41,6 +41,10 @@ client.interceptors.response.use(
       window.alert("데이터를 찾을 수 없습니다.");
       window.location.href = "/";
     }
+    if (error.response.status === 405) {
+      window.alert("데이터를 찾을 수 없습니다.");
+      window.location.href = "/";
+    }
     if (error.response.status === 500) {
       window.alert("서버 오류가 발생하여 방에 입장할 수 없습니다.");
       window.location.href = "/";
