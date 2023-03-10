@@ -214,6 +214,7 @@ const roomSlice = createSlice({
         state.isLoading = false;
         state.isSuccess = true;
         state.roomId = action.payload.openviduRoomId;
+        state.roomInfo = action.payload;
         // state.roomInfo = action.payload;
         // state.roomInfo = action.payload;
         // window.location.reload();

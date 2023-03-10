@@ -36,7 +36,7 @@ function ModalCreateRoom({ onClose, isOpen }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch(__createRoom(post));
-    dispatch(__postVideoToken(id + 1));
+    // dispatch(__postVideoToken(id + 1));
     setTimeout(() => {}, 1000);
     navigate(`/detail/${id + 1}`);
     setTimeout(() => {

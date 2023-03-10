@@ -26,8 +26,8 @@ client.interceptors.response.use(
   },
   function (error) {
     // Status Code 200범위 밖, 즉 실패했을때
-    // console.log("에러", error);
-    // console.log("에러에러", error.response.status);
+    console.log("에러", error);
+    console.log("에러에러", error.response.status);
     if (error.response.status === 401 || error.response.status === 406) {
       window.alert("다시 로그인이 필요합니다.");
       window.location.href = "/";
