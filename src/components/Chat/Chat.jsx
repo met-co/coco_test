@@ -1,18 +1,18 @@
 // FIXME: 원래 코드
-import styled from "styled-components";
-import { React, useState, useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
-import SockJS from "sockjs-client";
-import Stomp from "stompjs";
-import { subMessage } from "../../redux/modules/socketSlice";
+import styled from 'styled-components';
+import { React, useState, useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
+import SockJS from 'sockjs-client';
+import Stomp from 'stompjs';
+import { subMessage } from '../../redux/modules/socketSlice';
 // import { getMessage, getChatRoom } from "./redux/modules/socketSlice";
-import { FiSend } from "react-icons/fi";
+import { FiSend } from 'react-icons/fi';
 
 const Chat = (props) => {
-  const myEmail = localStorage.getItem("userEmail");
-  const Myname = localStorage.getItem("userNickname");
-  const chatRef = useRef("");
+  const myEmail = localStorage.getItem('userEmail');
+  const Myname = localStorage.getItem('userNickname');
+  const chatRef = useRef('');
 
   // const navigate = useNavigate();
   // const { chatRoomId } = useParams();
@@ -24,13 +24,13 @@ const Chat = (props) => {
 
   const dispatch = useDispatch();
 
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
   // const sock = new SockJS('http://localhost:8080/ws-stomp');
-  const sock = new SockJS("https://cocodingding.shop/ws-stomp");
+  const sock = new SockJS('https://cocodingding.shop/ws-stomp');
   const client = Stomp.over(sock);
 
   const headers = {
-    Authorization: localStorage.getItem("Authorization"),
+    Authorization: localStorage.getItem('Authorization'),
   };
 
   const { chatcollect } = useSelector((state) => state.chatcollect);
@@ -59,7 +59,7 @@ const Chat = (props) => {
 
   //엔터 눌럿을때 바로 챗함수 실행
   const handleEnterPress = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       myChat();
     }
@@ -89,7 +89,7 @@ const Chat = (props) => {
   // 채팅 전송
   const myChat = () => {
     const message = chatRef.current.value;
-    if (message === "") {
+    if (message === '') {
       return;
     }
     client.send(
@@ -143,10 +143,10 @@ const Chat = (props) => {
       </StChatBox>
       <Footer>
         <input
-          type="text"
+          type='text'
           ref={chatRef}
           onKeyDown={handleEnterPress}
-          placeholder="내용을 입력해주세요."
+          placeholder='내용을 입력해주세요.'
         />
         <button onClick={myChat}>
           <FiSend />
@@ -202,12 +202,14 @@ const StChatBox = styled.div`
 `;
 
 const StSendBox = styled.div`
+  margin-right: 10px;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
 `;
 
 const StReceiveBox = styled.div`
+  margin-left: 10px;
   display: flex;
   flex-direction: column;
 `;
@@ -215,17 +217,20 @@ const StReceiveBox = styled.div`
 const ChatBubble = styled.div`
   display: block;
   width: fit-content;
+  /* width: 80%; */
   max-width: 60%;
   margin: -10px 20px 10px 20px;
   padding: 15px;
   border-radius: 10px;
   color: black;
   font-size: 16px;
+  word-wrap: break-all;
+  word-break: break-word;
 
   /* 시간 표시를 위한 스타일 */
   position: relative;
   &:after {
-    content: "${(props) => props.time}";
+    content: '${(props) => props.time}';
     position: absolute;
     bottom: -20px;
     right: 0;
@@ -256,9 +261,9 @@ const Footer = styled.div`
   /* background-color: gray; */
   position: relative;
   input {
-    width: 360px;
+    flex-grow: 1;
     height: 70px;
-    margin: 0px 20px 0px 20px;
+    margin: 0px 20px;
     border-radius: 30px;
     outline: none;
     border: 1px solid #e3e3e3;
@@ -266,22 +271,22 @@ const Footer = styled.div`
   button {
     width: 55px;
     height: 55px;
-    position: absolute;
     line-height: 40px;
+    position: absolute;
     right: 25px;
     border-radius: 50%;
     color: #777777;
     background-color: #ffe45c;
-
     font-size: 30px;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
     border: 0 solid black;
+    bottom: calc(50% - 27.5px); // input 창 높이의 절반만큼 위로 이동
 
     :hover {
-      background-color: #c6ddff;
+      background-color: #3d8afd;
       color: white;
       transition: 0.1s ease;
     }
