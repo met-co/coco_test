@@ -55,6 +55,9 @@ const TodoList = memo(() => {
 
   return (
     <StContainer>
+      {memoizedTodos.length === 0 && (
+        <StNoTodoMessage>오늘의 할일을 추가해주세요</StNoTodoMessage>
+      )}
       <StTodoList>
         {memoizedTodos.map((todo) => (
           <StTodoListDescription key={todo.id}>
@@ -78,7 +81,7 @@ const TodoList = memo(() => {
                 onClick={() =>
                   handleEditTodo(
                     todo.id,
-                    prompt('Enter new todo text', todo.text)
+                    prompt('오늘의 할일 수정 하기', todo.text)
                   )
                 }
               >
@@ -97,6 +100,7 @@ const TodoList = memo(() => {
             type='text'
             value={newTodo}
             onChange={(e) => setNewTodo(e.target.value)}
+            placeholder='오늘의 할일을 작성해주세요'
           />
           <StTodoAddButton onClick={handleAddTodo}>
             <BsArrowUpCircle />
@@ -106,21 +110,41 @@ const TodoList = memo(() => {
     </StContainer>
   );
 });
-
 export default TodoList;
+
+const StNoTodoMessage = styled.div`
+  height: 200px;
+
+  /* margin-top: 50px; */
+  position: absolute;
+  padding: 0 20px 0 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 40px;
+  color: #999;
+  border-radius: 20px 20px 0 0;
+  /* background-color: rgba(255, 245, 194, 0.5); */
+`;
 
 const StContainer = styled.div`
   display: flex;
   flex-direction: column;
-  border: solid 1px gray;
-  border-radius: 15px;
-  height: 300px;
+  border: solid 1px #999;
+  border-radius: 20px;
+  height: 250px;
 `;
 
 const StTodoList = styled.div`
-  height: 250px;
+  height: 200px;
   overflow-y: scroll;
   padding: 10px;
+  border-radius: 20px 20px 0 0;
+
+  /* background-color: #fff5c2; */
+  background-color: rgba(255, 245, 194, 0.5);
+  /* opacity: 0.5; */
+
   ::-webkit-scrollbar {
     width: 0;
     height: 0;
@@ -132,7 +156,7 @@ const StTodoListDescription = styled.div`
   display: flex;
   justify-content: space-between;
   font-size: 20px;
-  color: gray;
+  color: #999;
   padding: 5px 10px 0px 10px;
   margin-top: 10px;
 `;
@@ -142,6 +166,11 @@ const StCheckbox = styled.input`
   height: 24px;
   width: 24px;
   cursor: pointer;
+
+  /* 선택되지 않은 경우 검은색 글자를 표시 */
+  :not(:checked) + span {
+    color: black;
+  }
 
   /* TODO: 이건 체크 박스 동그라미로 만들어주는데  check효과까지 직접 만들어줘야함.. */
   /* border: 1px solid #999;
